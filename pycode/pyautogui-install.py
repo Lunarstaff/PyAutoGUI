@@ -196,16 +196,158 @@ Screenshot Functions
 截图功能：
 
 The screenshot() Function
->>> tubar1 = pag.screenshot()
->>> tubar1
-<PIL.Image.Image image mode=RGB size=1920x1080 at 0x245B81E6048>
+    >>> tubar1 = pag.screenshot()
+    >>> tubar1
+    <PIL.Image.Image image mode=RGB size=1920x1080 at 0x245B81E6048>
 
 切换工作目录：
->>> import os
->>> os.chdir("./FIles")
->>> os.getcwd()
-'C:\\E-Data-File\\腾讯课堂\\Python入门\\PyAutoGUI\\FIles'
+    >>> import os
+    >>> os.chdir("./FIles")
+    >>> os.getcwd()
+    'C:\\E-Data-File\\腾讯课堂\\Python入门\\PyAutoGUI\\FIles'
 获取截图：
+    >>> pubar1 = pag.screenshot("./pubar1.png")
+    >>> os.listdir()
+    ['password()-demo-1.png', 'password()-demo-2.png', 'prompt()-demo.png', 'screenshot()-demo-1.png', 'tubar1.png']
+
+按给定区域获取截图：（获取当前的任务栏，区域为 1919，39）
+屏幕大小为(1920, 1080)
+所以，任务栏区域为：0，1079-39，1919，39
+0,1040,1919,1079
+    >>> tubar2 = pag.screenshot("./tubar2.png", region = (0,1040,1919,39))
+# 区域设置为（x1,y1,δ1,δ2）,其中x1,y1设置为获取截图的左上点，δ1,δ2设置为截图的长和高。
+    >>> tubar2
+    <PIL.Image.Image image mode=RGB size=1919x1079 at 0x26478B95F28>
+    >>> os.listdir()
+    ['password()-demo-1.png', 'password()-demo-2.png', 'prompt()-demo.png', 'screenshot()-demo-1.png', 'tubar1.png', 'tubar2.png']
+
+The Locate Functions
+
+图像定位方法：
+根据已有的图像对象，找到界面上对应的位置并返回定位到的区域（返回格式为：）
+再根据返回的区域信息，执行鼠标及键盘操作。
+下面演示，根据已有的Win图标找到Win键的位置并点击，打开Win10开始菜单。
+
+    # 找到Win键的区域
+    >>> Win_button_location = pag.locateOnScreen("./Win10-button-WinKey.png", region = (0,1040,1919,39))
+    >>> Win_button_location
+    (3, 1044, 43, 33)
+    # 计算找到的Win键区域的中位点
+    >>> Win_button_center = pag.center(Win_button_location)
+    >>> Win_button_center
+    (24, 1060)
+    # 单击
+    >>> pag.click(Win_button_center)
+
+有可以根据已有对象的图像，找到界面上对应的位置，并直接返回中位点信息的方法：
+    >>> Win_button_center = pag.locateCenterOnScreen('./Win10-button-WinKey.png')
+为了快速定位，可以通过 regin参数传入区域信息设置扫描区域
+    >>> Win_button_center = pag.locateCenterOnScreen('./Win10-button-WinKey.png', region = (0,1040,1919,39))
+    >>> Win_button_center
+    (24, 1060)
+
+Pixel Matching
+像素匹配：
+
+To obtain the RGB color of a pixel in a screenshot, use the Image object’s getpixel() method
+使用 图像对象的 getpixel() 方法获取图像上指定点的像素RGB颜色信息。
+    >>> im = pag.screenshot(region = (1450,194,50,50))
+    >>> im.getpixel(20,20)
+    >>> im.getpixel((20,20))
+    (64, 64, 64)
+或者直接调用getpixel()方法，获取当前屏幕指定点的像素颜色RGB信息
+>>> pag.pixel(321,1052)
+(14, 170, 255) #任务栏中遨游浏览器图标蓝色
+
+判断当前屏幕指定点的像素颜色是否与给定的颜色相同：
+>>> pag.pixelMatchesColor(321,1052,(14, 170, 255))
+True
+>>> pag.pixelMatchesColor(321,1052,(14, 155, 255))
+False
+
+可通过设置色差偏移量来放宽比较：
+>>> pag.pixelMatchesColor(321,1052,(14, 160, 255))
+False
+>>> pag.pixelMatchesColor(321,1052,(14, 160, 255), tolerance = 10) #允许色差偏移量为10
+True
+>>> pag.pixelMatchesColor(321,1052,(14, 160, 245), tolerance = 10)
+True
+>>> pag.pixelMatchesColor(321,1052,(14, 160, 235), tolerance = 10)
+False
+
+测试模块：
+PyAutoGUI常用的方法：
+• onScreen()
+• size()
+• position()
+• moveTo()
+• moveRel()
+• typewrite()
+• PAUSE
+
+其他的GUI模块：
+PyUserInput
+PyKeyboard
+PyMouse
+pykey
+Sikuli
+
+
+
+
+Window handling features
+Windows窗口处理功能：
+
+>>> wins = pag.getWindows() # 获取当前所有Windows的窗口对象，以字典类型返回
+>>> wins
+{'': <ctypes.wintypes.LP_c_long object at 0x0000026400C5ADC8>,
+'Python Console - PyAutoGUI': <ctypes.wintypes.LP_c_long object at 0x0000026400C5AAC8>,
+'PyAutoGUI [C:\\E-Data-File\\腾讯课堂\\Python入门\\PyAutoGUI] - ...\\pycode\\pyautogui-install.py [PyAutoGUI] - PyCharm': <ctypes.wintypes.LP_c_long object at 0x0000026400C5ACC8>,
+'pyautogui.pdf - Gaaiho Reader': <ctypes.wintypes.LP_c_long object at 0x0000026400C5A748>,
+'计算器 \u200e- 计算器': <ctypes.wintypes.LP_c_long object at 0x0000026400C5A948>,
+'设置': <ctypes.wintypes.LP_c_long object at 0x0000026400C5AC48>,
+'Microsoft Edge': <ctypes.wintypes.LP_c_long object at 0x0000026400C5A8C8>,
+'中国大学MOOC(慕课)_优质在线课程学习平台 - 傲游5 5.1.5.2000 - max5': <ctypes.wintypes.LP_c_long object at 0x0000026400C5A848>,
+'邮件': <ctypes.wintypes.LP_c_long object at 0x0000026400C5A9C8>,
+'收件箱 - 163-Lunar12 \u200e- 邮件': <ctypes.wintypes.LP_c_long object at 0x0000026400C5AA48>,
+'MI Hotkey Utility': <ctypes.wintypes.LP_c_long object at 0x0000026400C5AB48>,
+'金山词霸2016': <ctypes.wintypes.LP_c_long object at 0x0000026400C5A7C8>,
+'Files': <ctypes.wintypes.LP_c_long object at 0x0000026400C5A648>,
+'Program Manager': <ctypes.wintypes.LP_c_long object at 0x0000026400C5AD48>}
+
+
+>>> win_cal = pag.getWindow(title="计算器") # 获取标题（title）为“计算器”的Windows窗口，产生一个Win对象
+>>> win_cal
+<pyautogui._window_win.Window object at 0x000002647943DC18>
+>>> dir(win_cal) # Win对象的dir
+['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__',
+'__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__',
+'__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__',
+'__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__',
+'_hwnd',
+'close', 'get_position', 'maximize', 'minimize', 'move',
+'resize', 'restore', 'set_foreground', 'set_position']
+
+>>> win_cal.get_position() # 获取对象的位置信息（格式为：x1,y1,x2,y2）,返回窗口左上角的点和右下角点的坐标
+(238, 262, 574, 802)
+
+>>> win_cal.position() # returns (x, y) of top-left corner (文档上说的有这个方法，实际上没有。)
+
+>>> win_cal.maximize() # 使窗口最大化，再次执行不能还原
+>>> win_cal.minimize() # 使已经最大化的窗口，最小化到任务栏
+
+>>> win_cal.move(50,200) # 移动窗口 ,绝对坐标移动：将窗口左上点移动到屏幕的（50，200）位置处。
+>>> win_cal.moveRel(x=0, y=0) # moves relative to the x, y of top-left corner of the window (文档上说的有这个方法，实际上没有。)
+
+
+>>> win_cal.clickRel(x=0, y=0, clicks=1, interval=0.0, button=’left’)
+# click relative to the x, y of top-left corner of the window (文档上说的有这个方法，实际上没有。)
+
+
+>>> win_cal.resize(500,800) # 设置窗口大小为（500X800），宽为500，高为800
+
+>>> win_cal.close() # 关闭窗口（实际上并没有关闭，只是释放了窗口对象）
+
 
 
 
