@@ -3,11 +3,11 @@
 # 找到计算器图标位置
 # 打开计算器并初始化
 # 执行计算
+
+遗留问题：
+    cal的截图在任务栏换个位置，locatOnScreen方法就找不到了。
+
 """
-
-
-import pyautogui as pag
-cal_png = "../Files/Win10-tubar-cal.png"
 
 # 找到计算器图标位置
 def findImageOnScreen(mi_png):
@@ -16,7 +16,7 @@ def findImageOnScreen(mi_png):
     :param mi_png:目标图像
     :return:对应图像的中位点，元组类型
     """
-    mi_png_center = pag.locateCenterOnScreen(mi_png)
+    mi_png_center = pag.locateCenterOnScreen(mi_png, region=(0, 1040, 1919, 39))
     return mi_png_center
 
 
@@ -29,14 +29,22 @@ def clickOn_a_point(point):
     """
     pag.click(point[0], point[1])
     app_name = pag.getWindow(title="计算器")
-    app_name.set_position(0,0,600,800)
+    app_name.set_position(0, 0, 600, 800)
     return app_name
 
 # 执行计算
 # def cal_numadd()
 
 def main():
-    clickOn_a_point(findImageOnScreen(cal_png))
+    cal_point = findImageOnScreen(cal_png)
+    print("cal_point = {}".format(cal_point[0]))
+    clickOn_a_point(cal_point)
     return
 
+
+import pyautogui as pag
+
+cal_png = "C:\\E-Data-File\\腾讯课堂\\Python入门\\PyAutoGUI\\Files\\Win10-tubar-cal.png"
 main()
+
+
